@@ -66,7 +66,7 @@ TcpAutoCC::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
     if (!m_baseRtt.IsZero() && !lastRtt.IsZero() && lastRtt > m_baseRtt)
     {
         double qd_ms = (lastRtt - m_baseRtt).GetMilliSeconds();
-        const double kTarget = 13.0; // start scaling at 13 ms of queuing
+        const double kTarget = 12.0; // start scaling at 12 ms of queuing
         const double kCeil   = 50.0; // stop growing at 50 ms of queuing
         if (qd_ms >= kCeil)
         {
