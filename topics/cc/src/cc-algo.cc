@@ -53,8 +53,27 @@ TcpAutoCC::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
 
     if (tcb->m_cWnd < tcb->m_ssThresh)
     {
-        // Slow start: +1 MSS per ACK.
-        tcb->m_cWnd += tcb->m_segmentSize * segmentsAcked;
+        // Slow start: full +1 MSS per ACK for fresh flows.
+        // For established flows (m_baseRtt known), apply a gentle delay brake so
+        // recovering flows yield bandwidth to later-starting competitors.
+        double ss_scale = 1.0;
+        Time lastRtt = tcb->m_lastRtt;
+        if (!m_baseRtt.IsZero() && !lastRtt.IsZero() && lastRtt > m_baseRtt)
+        {
+            double qd_ms = (lastRtt - m_baseRtt).GetMilliSeconds();
+            const double kSsTarget = 30.0; // mild onset for SS brake
+            const double kSsCeil   = 80.0; // floor scale at 0.5
+            if (qd_ms >= kSsCeil)
+            {
+                ss_scale = 0.5;
+            }
+            else if (qd_ms > kSsTarget)
+            {
+                double t = (kSsCeil - qd_ms) / (kSsCeil - kSsTarget);
+                ss_scale = 0.5 + 0.5 * t; // range [0.5, 1.0]
+            }
+        }
+        tcb->m_cWnd += static_cast<uint32_t>(tcb->m_segmentSize * segmentsAcked * ss_scale + 0.5);
         return;
     }
 
