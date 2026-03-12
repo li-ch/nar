@@ -20,12 +20,14 @@ TcpAutoCC::GetTypeId()
 }
 
 TcpAutoCC::TcpAutoCC()
-    : TcpCongestionOps()
+    : TcpCongestionOps(),
+      m_baseRtt(Time(0))
 {
 }
 
 TcpAutoCC::TcpAutoCC(const TcpAutoCC& sock)
-    : TcpCongestionOps(sock)
+    : TcpCongestionOps(sock),
+      m_baseRtt(sock.m_baseRtt)
 {
 }
 
@@ -57,15 +59,15 @@ TcpAutoCC::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
     }
 
     // Congestion avoidance with delay-gradient scaling.
-    // Scale back growth linearly as queueing delay (lastRtt - minRtt) rises.
+    // Use our own tracked m_baseRtt (true propagation delay proxy).
+    // Scale back growth linearly as queueing delay (lastRtt - baseRtt) rises.
     double scale = 1.0;
-    Time minRtt = tcb->m_minRtt;
     Time lastRtt = tcb->m_lastRtt;
-    if (!minRtt.IsZero() && !lastRtt.IsZero() && lastRtt > minRtt)
+    if (!m_baseRtt.IsZero() && !lastRtt.IsZero() && lastRtt > m_baseRtt)
     {
-        double qd_ms = (lastRtt - minRtt).GetMilliSeconds();
-        const double kTarget = 5.0;  // tolerate up to 5 ms of queuing
-        const double kCeil   = 25.0; // stop growing at 25 ms of queuing
+        double qd_ms = (lastRtt - m_baseRtt).GetMilliSeconds();
+        const double kTarget = 8.0;  // allow up to 8 ms of queuing
+        const double kCeil   = 30.0; // stop growing at 30 ms of queuing
         if (qd_ms >= kCeil)
         {
             scale = 0.0;
@@ -82,6 +84,20 @@ TcpAutoCC::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
             static_cast<double>(tcb->m_segmentSize * tcb->m_segmentSize) / tcb->m_cWnd.Get();
         const uint32_t delta = static_cast<uint32_t>(std::max(1.0, adder));
         tcb->m_cWnd += static_cast<uint32_t>(delta * segmentsAcked * scale + 0.5);
+    }
+}
+
+void
+TcpAutoCC::PktsAcked(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked, const Time& rtt)
+{
+    if (rtt.IsZero())
+    {
+        return;
+    }
+    // Track all-time minimum RTT as proxy for base propagation delay.
+    if (m_baseRtt.IsZero() || rtt < m_baseRtt)
+    {
+        m_baseRtt = rtt;
     }
 }
 
