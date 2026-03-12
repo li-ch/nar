@@ -74,7 +74,8 @@ TcpAutoCC::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
         }
         else if (qd_ms > kTarget)
         {
-            scale = 1.0 - (qd_ms - kTarget) / (kCeil - kTarget);
+            double t = (kCeil - qd_ms) / (kCeil - kTarget);
+            scale = t * t; // squared: faster drop, better fairness for late flows
         }
     }
 
