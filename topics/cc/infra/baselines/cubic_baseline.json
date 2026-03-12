@@ -1,0 +1,7 @@
+{
+  "throughput_mbps": 9.637716,
+  "avg_rtt_ms": 54.85716,
+  "p99_rtt_ms": 54.85716,
+  "fairness_index": 0.9435035541996545,
+  "adaptation_s": 0.10000000000000142
+}

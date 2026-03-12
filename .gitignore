@@ -1,23 +1,22 @@
-# Python-generated files
+# Python
 __pycache__/
-*.py[oc]
+*.pyc
+.venv/
+
+# Build and packaging
 build/
 dist/
-wheels/
-*.egg-info
+*.egg-info/
 
-# Virtual environments
-.venv
-worktrees/
-results/
-queue/
+# Experiment outputs
+artifacts/
+results.tsv
+run.log
 
-# Agent prompt files (generated per-session by launchers)
+# Notebooks
+.ipynb_checkpoints/
+
+# Local editor/tooling files
+.cursor/plans/
 CLAUDE.md
 AGENTS.md
-
-# Experimental code/artifacts
-dev/
-
-# Results file
-results.tsv

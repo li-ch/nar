@@ -1,0 +1,15 @@
+---
+description: Enforce D-drive and repo-local storage for nar
+alwaysApply: true
+---
+
+# Storage and Path Policy
+
+- Never read or write `nar` artifacts, caches, datasets, builds, or dependencies on `C:`.
+- Keep all `nar` state under `D:/data/nar`.
+- Use repo-local paths:
+  - `third_party/ns-3-dev` for ns-3 source (git submodule)
+  - `artifacts/<topic>/...` for runtime traces and results
+  - `topics/<topic>/infra/baselines` for baseline metrics
+- Do not hardcode user-specific absolute paths (especially under `C:/Users/...`).
+- Prefer paths relative to repository root so all users can run the project consistently.
