@@ -53,14 +53,35 @@ TcpAutoCC::IncreaseWindow(Ptr<TcpSocketState> tcb, uint32_t segmentsAcked)
     {
         // Slow start: +1 MSS per ACK.
         tcb->m_cWnd += tcb->m_segmentSize * segmentsAcked;
+        return;
     }
-    else
+
+    // Congestion avoidance with delay-gradient scaling.
+    // Scale back growth linearly as queueing delay (lastRtt - minRtt) rises.
+    double scale = 1.0;
+    Time minRtt = tcb->m_minRtt;
+    Time lastRtt = tcb->m_lastRtt;
+    if (!minRtt.IsZero() && !lastRtt.IsZero() && lastRtt > minRtt)
     {
-        // Congestion avoidance: roughly +1 MSS per RTT.
+        double qd_ms = (lastRtt - minRtt).GetMilliSeconds();
+        const double kTarget = 5.0;  // tolerate up to 5 ms of queuing
+        const double kCeil   = 25.0; // stop growing at 25 ms of queuing
+        if (qd_ms >= kCeil)
+        {
+            scale = 0.0;
+        }
+        else if (qd_ms > kTarget)
+        {
+            scale = 1.0 - (qd_ms - kTarget) / (kCeil - kTarget);
+        }
+    }
+
+    if (scale > 0.0)
+    {
         const double adder =
             static_cast<double>(tcb->m_segmentSize * tcb->m_segmentSize) / tcb->m_cWnd.Get();
         const uint32_t delta = static_cast<uint32_t>(std::max(1.0, adder));
-        tcb->m_cWnd += delta * segmentsAcked;
+        tcb->m_cWnd += static_cast<uint32_t>(delta * segmentsAcked * scale + 0.5);
     }
 }
 
