@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git submodule:*)",
+      "Bash(uv run:*)",
+      "Bash(cd /d/data/nar/third_party/ns-3-dev && python ns3 run \"auto-cc-scenario --algorithm=TcpAutoCC --output_dir=D:/data/nar/artifacts/cc/traces\" 2>&1 | head -20)",
+      "Bash(\"D:/data/nar/.venv/Scripts/python.exe\" third_party/ns-3-dev/ns3 run \"auto-cc-scenario --algorithm=TcpAutoCC --output_dir=D:/data/nar/artifacts/cc/traces\" 2>&1)",
+      "Bash(echo \"$PATH\" | tr ':' '\\\\n' | grep -i mingw)",
+      "Bash(echo \"$PATH\" | tr ':' '\\\\n' | head -20)",
+      "Bash(echo $PATH)",
+      "Bash(WINLIBS=\"/c/Users/crisc/AppData/Local/Microsoft/WinGet/Packages/BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/mingw64/bin\" && PATH=\"$WINLIBS:$PATH\" && \"D:/data/nar/third_party/ns-3-dev/build/contrib/auto-cc/ns3.42-auto-cc-scenario-default.exe\" --help 2>&1 | head -5)",
+      "Bash(WINLIBS=\"C:\\\\\\\\Users\\\\\\\\crisc\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Microsoft\\\\\\\\WinGet\\\\\\\\Packages\\\\\\\\BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\\\\\\\mingw64\\\\\\\\bin\" && NAR_TOOLCHAIN_BIN=\"$WINLIBS\" uv run topics/cc/run.py > run.log 2>&1; echo \"EXIT:$?\")",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(NAR_TOOLCHAIN_BIN=\"C:\\\\Users\\\\crisc\\\\AppData\\\\Local\\\\Microsoft\\\\WinGet\\\\Packages\\\\BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\\\mingw64\\\\bin\" uv run topics/cc/run.py 2>&1)",
+      "Bash(cd D:/data/nar && NAR_TOOLCHAIN_BIN=\"C:\\\\Users\\\\crisc\\\\AppData\\\\Local\\\\Microsoft\\\\WinGet\\\\Packages\\\\BrechtSanders.WinLibs.POSIX.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\\\mingw64\\\\bin\" uv run topics/cc/run.py 2>&1)"
+    ]
+  }
+}
